@@ -1,0 +1,23 @@
+{% extends "base.html.j2" %}
+{% import 'bootstrap/wtf.html' as wtf %}
+{% block app_content %}
+<h1>Edit News</h1>
+<div class="row">
+    <div class="col-md-4">
+        {% if (current_user.is_admin or current_user.id == news_item.author.user_id)%}
+            {{ wtf.quick_form(form) }}
+            <style>
+                .btn-custom-red {
+                    background-color: #f85b5b;  
+                    color: white;  
+                }
+            </style>
+            <form method="post" action="{{ url_for('remove_news', news_id=news_item.id) }}">
+                <input type="submit" value="Delete News" class="btn btn-custom-red">
+            </form>
+        {% else %}
+            <p>You are not the author of this news item and cannot edit it.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

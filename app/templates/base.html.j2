@@ -1,0 +1,81 @@
+{% extends 'bootstrap/base.html' %}
+{% block title %}
+{% if title %}
+{{ title }} - South China Morning Post
+{% else %}
+{{ _('Welcome to Microblog') }}
+{% endif %}
+{% endblock %}
+{% block navbar %}
+
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button"
+                        class="navbar-toggle collapsed"
+                        data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1"
+                        aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+            <a class="navbar-brand" href="{{ url_for('index') }}">South China Morning Post</a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="{{ url_for('explore') }}">{{ _('Explore') }}</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                {% if current_user.is_anonymous %}
+                <li>
+                    <a href="{{ url_for('login') }}">{{ _('Login') }}</a>
+                </li>
+                {% else %}
+                {% for category in categories %}
+                <li><a href="{{ url_for('category', category_id=category.id) }}">{{ category.name }}</a></li>
+                {% endfor %}
+                <li>
+                    <a href="{{ url_for('user', username=current_user.username) }}">{{ _('Profile') }}</a>
+                </li>
+                <li>
+                    <form method="GET" action="{{ url_for('search') }}">
+                        <input type="text" name="query" placeholder="Search news"
+                            value="">
+                        <input type="submit" value="Search">
+                    </form>
+                </li>
+                <li class="nav navbar-nav navbar-right">
+                    <a href="{{ url_for('logout') }}">{{ _('Logout') }}</a>
+                </li>
+                {% endif %}
+                {% if current_user.is_admin or current_user.author%}
+                <li>
+                    <a href="{{ url_for('add_news') }}">Add News</a>
+                </li>
+                {% endif %}
+            </ul>
+            
+        </div>
+    </div>
+</nav>
+{% endblock %}
+{% block content %}
+<div class="container">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}<div class="alert alert-info" role="alert">{{ message }}</div>{% endfor %}
+    {% endif %}
+    {% endwith %}
+    {# application content needs to be provided in the app_content block #}
+    {% block app_content %}{% endblock %}
+</div>
+{% endblock %}
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{{ moment.lang(g.locale) }}
+{% endblock %}
